@@ -20,7 +20,7 @@ public class SpringConfiguration {
     }
 
     private ApiInfo apiInfo() {
-        springfox.documentation.service.Contact contact = new Contact("Demo Project API", "http://brigelbaz.com", "navneetkumar42s2@gmail.com");
+        springfox.documentation.service.Contact contact = new Contact("Demo Project API", "http://bridgelabz.com", "navneetkumar42s2@gmail.com");
         return new ApiInfoBuilder().title("Demo Service Swagger API").description("Demo Service Swagger API for Learning Swagger").version("0.0.1.SNAPSHOT").license("Apache 2.0").licenseUrl(" http://www.apache.org/licenses/LICENSE-2.0").contact(contact).build();
     }
 }
