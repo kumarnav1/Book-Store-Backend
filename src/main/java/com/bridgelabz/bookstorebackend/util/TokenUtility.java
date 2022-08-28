@@ -13,14 +13,10 @@ import org.springframework.stereotype.Component;
 public class TokenUtility {
     private static final String TOKEN_SECRET = "Navneet";
 
-
-    public  String createToken(int id)   {
+    public String createToken(int id) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
-            String token = JWT.create()
-                    .withClaim("user_id", id)
-                    .sign(algorithm);
-            return token;
+            return JWT.create().withClaim("user_id", id).sign(algorithm);
         } catch (JWTCreationException exception) {
             exception.printStackTrace();
         } catch (IllegalArgumentException e) {
@@ -29,19 +25,18 @@ public class TokenUtility {
         return null;
     }
 
-    public int decodeToken(String token)
-    {
+    public int decodeToken(String token) {
         int userid;
-     Verification verification = null;
+        Verification verification = null;
         try {
             verification = JWT.require(Algorithm.HMAC256(TOKEN_SECRET));
-        } catch (IllegalArgumentException  e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        JWTVerifier jwtverifier=verification.build();
-        DecodedJWT decodedjwt=jwtverifier.verify(token);
-        Claim claim=decodedjwt.getClaim("user_id");
-        userid=claim.asInt();
+        JWTVerifier jwtverifier = verification.build();
+        DecodedJWT decodedjwt = jwtverifier.verify(token);
+        Claim claim = decodedjwt.getClaim("user_id");
+        userid = claim.asInt();
         return userid;
 
     }
