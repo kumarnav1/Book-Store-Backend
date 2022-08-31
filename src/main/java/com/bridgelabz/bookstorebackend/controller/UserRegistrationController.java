@@ -3,10 +3,9 @@ package com.bridgelabz.bookstorebackend.controller;
 
 import com.bridgelabz.bookstorebackend.dto.ResponseDTO;
 import com.bridgelabz.bookstorebackend.dto.UserLoginDTO;
-import com.bridgelabz.bookstorebackend.dto.UserOtpVerificationDTO;
 import com.bridgelabz.bookstorebackend.dto.UserRegistrationDTO;
 import com.bridgelabz.bookstorebackend.model.UserRegistration;
-import com.bridgelabz.bookstorebackend.service.IUserService;
+import com.bridgelabz.bookstorebackend.service.serviceInterface.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/user")
 public class UserRegistrationController {
@@ -21,12 +21,9 @@ public class UserRegistrationController {
     @Autowired
     IUserService userRegistrationService;
 
-    final static String SUCCESS_MESSAGE = "RegistrationEntered Otp is valid, and Registration was successful.";
-    final static String FAIL_MESSAGE = "RegistrationEntered OTP was not valid!, Registration failed!, please try again";
-
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> addUserInBookStore(@Valid @RequestBody UserRegistrationDTO userDTO) {
-        UserRegistration userRegistration = userRegistrationService.registerUser(userDTO);
+        Integer userRegistration = userRegistrationService.registerUser(userDTO);
         ResponseDTO responseDTO = new ResponseDTO("User Registered Successfully", userRegistration);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
@@ -45,20 +42,20 @@ public class UserRegistrationController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @PostMapping({"/verifyotp"})
-    public String verifyOtp(@Valid @RequestBody UserOtpVerificationDTO userNameOtpDTO) {
-        String email = userNameOtpDTO.getEmail();
-        Integer otp = userNameOtpDTO.getOtp();
-        Boolean isVerifyOtp = userRegistrationService.verifyOtp(email, otp);
-        if (!isVerifyOtp) return FAIL_MESSAGE;
-        return SUCCESS_MESSAGE;
+    @GetMapping({"/verifyotp"})
+    public int verifyOtp(@RequestParam String email , @RequestParam Integer otp) {
+        return userRegistrationService.verifyOtp(email, otp);
     }
 
     @GetMapping("/login")
     public String userLogin(@RequestParam String email, @RequestParam String password) {
         UserLoginDTO userLoginDTO = new UserLoginDTO(email, password);
-        String response = userRegistrationService.loginUser(userLoginDTO.getEmail(), userLoginDTO.getPassword());
-        return response;
+        return userRegistrationService.loginUser(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+    }
+
+    @GetMapping("/logintest")
+    public int userTestLogin(@RequestParam String email, @RequestParam String password) {
+        return userRegistrationService.loginUserTest(email, password);
     }
 
     @GetMapping(value = {"/delete/{token}"})
@@ -66,8 +63,21 @@ public class UserRegistrationController {
         return userRegistrationService.deleteRecordByToken(token);
     }
 
-    @PostMapping("/forgotpassword")
-    public String forgotPassword(@RequestParam String email, @RequestParam String password) {
+    @GetMapping("/forgotpassword")
+    public int forgotPassword(@RequestParam String email, @RequestParam String password) {
         return userRegistrationService.forgotPassword(email, password);
+    }
+
+    @GetMapping("/gettoken/{email}")
+    public ResponseEntity<ResponseDTO> getToken(@PathVariable String email) {
+        String token = userRegistrationService.getToken(email);
+        ResponseDTO responseDTO = new ResponseDTO("token Sent", token);
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/getIdByToken/{token}")
+    public ResponseEntity<ResponseDTO> getUserById(@PathVariable String token) {
+        return new ResponseEntity<>(new ResponseDTO("Get User Data By Id",
+                userRegistrationService.getIdByToken(token)), HttpStatus.OK);
     }
 }

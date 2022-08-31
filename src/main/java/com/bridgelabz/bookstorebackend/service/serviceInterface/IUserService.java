@@ -1,13 +1,13 @@
-package com.bridgelabz.bookstorebackend.service;
+package com.bridgelabz.bookstorebackend.service.serviceInterface;
 
 import com.bridgelabz.bookstorebackend.dto.UserRegistrationDTO;
 import com.bridgelabz.bookstorebackend.model.UserRegistration;
 
 public interface IUserService {
 
-    UserRegistration registerUser(UserRegistrationDTO userDTO);
+    Integer registerUser(UserRegistrationDTO userDTO);
 
-    Boolean verifyOtp(String email, Integer otp);
+    int verifyOtp(String email, Integer otp);
 
     String loginUser(String email, String password);
 
@@ -21,7 +21,11 @@ public interface IUserService {
 
     UserRegistration getUserDataById(int userId);
 
-    String forgotPassword(String email, String password);
+    int forgotPassword(String email, String password);
 
     UserRegistration getUserDataByEmail(String email);
+
+    int loginUserTest(String email, String password);
+
+    Object getIdByToken(String token);
 }

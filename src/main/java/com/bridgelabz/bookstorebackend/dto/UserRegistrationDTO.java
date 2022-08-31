@@ -25,9 +25,9 @@ public class UserRegistrationDTO {
     @NotEmpty(message = "password cannot be null")
     public String password;
 
-    @JsonFormat(pattern="dd MMM yyyy")
+/*    @JsonFormat(pattern="dd MMM yyyy")*/
     public LocalDate dateOfBirth;
 
-    @JsonFormat(pattern="dd MMM yyyy")
+/*    @JsonFormat(pattern="dd MMM yyyy")*/
     public LocalDate registrationDate;
 }

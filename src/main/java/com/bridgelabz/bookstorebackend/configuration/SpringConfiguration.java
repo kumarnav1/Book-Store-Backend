@@ -14,9 +14,10 @@ import static springfox.documentation.builders.PathSelectors.regex;
 @Configuration
 @EnableSwagger2
 public class SpringConfiguration {
+
     @Bean
     public Docket postsApi() {
-        return new Docket(DocumentationType.SWAGGER_2).groupName("public-api").apiInfo(apiInfo()).select().paths(regex("/user.*")).build();
+        return new Docket(DocumentationType.SWAGGER_2).groupName("public-api").apiInfo(apiInfo()).select().paths(regex("/user.*|/book.*")).build();
     }
 
     private ApiInfo apiInfo() {

@@ -18,6 +18,7 @@ public class BookStoreBackendApplication {
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -3,6 +3,7 @@ package com.bridgelabz.bookstorebackend.service;
 import com.bridgelabz.bookstorebackend.dto.UserRegistrationDTO;
 import com.bridgelabz.bookstorebackend.model.UserRegistration;
 import com.bridgelabz.bookstorebackend.repository.IUserRegistrationRepository;
+import com.bridgelabz.bookstorebackend.service.serviceInterface.IUserService;
 import com.bridgelabz.bookstorebackend.util.EmailSenderUtility;
 import com.bridgelabz.bookstorebackend.util.TokenUtility;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,7 @@ public class UserService implements IUserService {
 
     @Autowired
     EmailSenderUtility emailService;
+
     @Autowired
     private ModelMapper modelMapper;
 
@@ -30,31 +32,34 @@ public class UserService implements IUserService {
     TokenUtility util;
 
     @Override
-    public UserRegistration registerUser(UserRegistrationDTO userDTO) {
+    public Integer registerUser(UserRegistrationDTO userDTO) {
+        UserRegistration byEmailId = iUserRepository.findByEmailId(userDTO.getEmail());
+        if (!(byEmailId == null))
+            return 1;
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         UserRegistration user = modelMapper.map(userDTO, UserRegistration.class);
         String otp = getRandomNumberString();
         Integer intOtp = Integer.parseInt(otp);
         user.setOtp(intOtp);
         iUserRepository.save(user);
-        emailService.sendEmail(user.getEmail(), "Otp for Verification", "Otp sent for verification purpose"
+     /*   emailService.sendEmail(user.getEmail(), "Otp for Verification", "Otp sent for verification purpose"
                 + user.getFirstName() + "Please Click here to verify the Otp :-   "
-                + "http://localhost:8080/user/verifyOtp" + intOtp);
-        return user;
+                + "http://localhost:8080/user/verifyOtp" + intOtp);*/
+        return 0;
     }
 
     @Override
-    public Boolean verifyOtp(String email, Integer otp) {
+    public int verifyOtp(String email, Integer otp) {
         UserRegistration user = iUserRepository.findByEmailId(email);
         if (user == null)
-            return false;
+            return 0;
         Integer userOtpFromServer = user.getOtp();
         if (!(otp.equals(userOtpFromServer)))
-            return false;
+            return 2;
         iUserRepository.changeVerified(email);
-        emailService.sendEmail(user.getEmail(), "Verification Successful", "Hi " + user.getFirstName() + ", You have successfully " +
-                "verified your account. You can now login using Your email and password using this link. " + "http://localhost:8080/user/login");
-        return true;
+     /*   emailService.sendEmail(user.getEmail(), "Verification Successful", "Hi " + user.getFirstName() + ", You have successfully " +
+                "verified your account. You can now login using Your email and password using this link. " + "http://localhost:8080/user/login");*/
+        return 1;
     }
 
     @Override
@@ -79,6 +84,7 @@ public class UserService implements IUserService {
     @Override
     public String getToken(String email) {
         UserRegistration userRegistration = iUserRepository.findByEmailId(email);
+        System.out.println(userRegistration);
         return util.createToken(userRegistration.getUserId());
     }
 
@@ -111,18 +117,35 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String forgotPassword(String email, String password) {
+    public int forgotPassword(String email, String password) {
         UserRegistration userDataByEmail = this.getUserDataByEmail(email);
         if (userDataByEmail == null)
-            return "User not found";
+            return 0;
         String newPassword = passwordEncoder.encode(password);
         System.out.println("newPassword: " + newPassword);
         iUserRepository.updateNewPassword(email, newPassword);
-        return "Password updated successfully";
+        return 1;
     }
 
     @Override
     public UserRegistration getUserDataByEmail(String email) {
         return iUserRepository.findByEmailId(email);
+    }
+
+    @Override
+    public int loginUserTest(String email, String password) {
+        UserRegistration userLogin = iUserRepository.findByEmailId(email);
+        if (userLogin == null)
+            return 0;
+        if (userLogin.getVerified() == null)
+            return 1;
+        if (!(passwordEncoder.matches(password, userLogin.getPassword())))
+            return 2;
+        return 3;
+    }
+
+    @Override
+    public Object getIdByToken(String token) {
+        return util.decodeToken(token);
     }
 }
