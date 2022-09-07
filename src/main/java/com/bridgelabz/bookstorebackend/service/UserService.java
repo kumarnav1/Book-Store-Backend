@@ -42,9 +42,9 @@ public class UserService implements IUserService {
         Integer intOtp = Integer.parseInt(otp);
         user.setOtp(intOtp);
         iUserRepository.save(user);
-     /*   emailService.sendEmail(user.getEmail(), "Otp for Verification", "Otp sent for verification purpose"
+       emailService.sendEmail(user.getEmail(), "Otp for Verification", "Otp sent for verification purpose"
                 + user.getFirstName() + "Please Click here to verify the Otp :-   "
-                + "http://localhost:8080/user/verifyOtp" + intOtp);*/
+                + "http://localhost:8080/user/verifyOtp" + intOtp);
         return 0;
     }
 
@@ -57,8 +57,8 @@ public class UserService implements IUserService {
         if (!(otp.equals(userOtpFromServer)))
             return 2;
         iUserRepository.changeVerified(email);
-     /*   emailService.sendEmail(user.getEmail(), "Verification Successful", "Hi " + user.getFirstName() + ", You have successfully " +
-                "verified your account. You can now login using Your email and password using this link. " + "http://localhost:8080/user/login");*/
+       emailService.sendEmail(user.getEmail(), "Verification Successful", "Hi " + user.getFirstName() + ", You have successfully " +
+                "verified your account. You can now login using Your email and password using this link. " + "http://localhost:8080/user/login");
         return 1;
     }
 

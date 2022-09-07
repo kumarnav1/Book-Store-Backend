@@ -17,7 +17,7 @@ public class SpringConfiguration {
 
     @Bean
     public Docket postsApi() {
-        return new Docket(DocumentationType.SWAGGER_2).groupName("public-api").apiInfo(apiInfo()).select().paths(regex("/user.*|/book.*")).build();
+        return new Docket(DocumentationType.SWAGGER_2).groupName("public-api").apiInfo(apiInfo()).select().paths(regex("/user.*|/book.*|/cart.*")).build();
     }
 
     private ApiInfo apiInfo() {
